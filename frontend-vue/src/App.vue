@@ -22,12 +22,12 @@ async function run(action, success) {
     message.value = success;
   } catch (e) {
     message.value = errorMessage(e);
-    if (e.status === 404) { // 이미 지워진 글이면 선택을 풀고 목록을 다시 불러옴
+    if (e.status === 404) {   // 이미 지워진 글이면  선택을 풀고 목록을 다시 불러옴
       selected.value = null;
       await refresh();
     }
   } finally {
-    user.value = getSession().user; // 401로 토큰이 지워졌을 수 있어서 화면의 로그인 상태를 다시 맞춤
+    user.value = getSession().user; // 401로 토큰이 지워졌을 수도 있으닉가 화면의 로그인 상태를 다시 맞춤
     busy.value = false;
   }
 }
@@ -77,7 +77,7 @@ function remove() {
       await refresh();
     }, "게시글을 삭제했습니다.");
 }
-// 이 탭의 메모리에서만 토큰을 지움 (이미 복사된 토큰은 만료 전까지 서버에서 유효함)
+// 이 탭의 메모리에서만 토큰을 지움 (이미 복사된 토큰은 만료 전까지 서버에서는 유효함1111!!!)
 function logout() {
   clearSession();
   user.value = null;

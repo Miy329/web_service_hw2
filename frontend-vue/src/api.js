@@ -21,7 +21,7 @@ export async function request(path, options = {}) {
   });
   const data = response.status === 204 ? null : await response.json();
   if (!response.ok) {
-    // 401이면 로그인 상태 해제 (토큰 없음, 변조, 만료 모두 401)
+    // 401이면 로그인 상태를 해제시킴 (토큰 없음, 변조, 만료 모두 401)
     // 403은 로그인은 맞고 권한만 없는 거라 로그아웃시키지 않음
     if (response.status === 401) clearSession();
     const error = new Error(
@@ -44,7 +44,7 @@ export async function login(email, password) {
   return data.user;
 }
 export function canEdit(post) {
-  // 본인 글에만 수정, 삭제 버튼 표시
+  // 본인이 작성한 글에만 수정, 삭제 버튼 표시가 뜸
   // 버튼을 숨기는 건 화면에서만이고, 실제 권한 검사는 서버의 assertOwner()가 함
   if (!session.user || !post) return false;
   return session.user.id === post.authorId;
