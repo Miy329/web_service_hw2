@@ -14,6 +14,7 @@ const email = ref("alice@class.test"),
 const refresh = async () => {
   posts.value = await api.list();
 };
+// 요청을 실행하는 공통 함수: 성공하면 안내 문구, 실패하면 code에 맞는 문구를 보여줌
 async function run(action, success) {
   busy.value = true;
   try {
@@ -21,12 +22,12 @@ async function run(action, success) {
     message.value = success;
   } catch (e) {
     message.value = errorMessage(e);
-    if (e.status === 404) {
+    if (e.status === 404) { // 이미 지워진 글이면 선택을 풀고 목록을 다시 불러옴
       selected.value = null;
       await refresh();
     }
   } finally {
-    user.value = getSession().user;
+    user.value = getSession().user; // 401로 토큰이 지워졌을 수 있어서 화면의 로그인 상태를 다시 맞춤
     busy.value = false;
   }
 }
@@ -76,10 +77,11 @@ function remove() {
       await refresh();
     }, "게시글을 삭제했습니다.");
 }
+// 이 탭의 메모리에서만 토큰을 지움 (이미 복사된 토큰은 만료 전까지 서버에서 유효함)
 function logout() {
   clearSession();
   user.value = null;
-  reset();
+  reset(); // 쓰던 글 입력창도 같이 비움
   message.value = "이 탭의 로그인 상태를 해제했습니다.";
 }
 function me() {
