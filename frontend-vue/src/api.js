@@ -1,11 +1,11 @@
-//  FE-01~04: 공통 API 명세와 구현 체크리스트를 보고 완성하세요.
+// 로그인 정보는 브라우저 메모리에만 저장
 let session = { accessToken: "", user: null };
 export const getSession = () => session;
 export function clearSession() {
   session = { accessToken: "", user: null };
 }
 function authorizationHeaders() {
-  //  FE-02: 메모리에 보관한 토큰을 Bearer 헤더로 보내세요.
+  // 토큰이 있을 때만 Bearer 헤더 추가
   if (!session.accessToken) return {};
   return { Authorization: `Bearer ${session.accessToken}` };
 }
@@ -20,7 +20,7 @@ export async function request(path, options = {}) {
   });
   const data = response.status === 204 ? null : await response.json();
   if (!response.ok) {
-    //  FE-03: 401이면 메모리의 로그인 상태도 해제하세요.
+    // 401이면 로그인 상태 해제
     if (response.status === 401) clearSession();
     const error = new Error(
         data.message || data.code || `HTTP ${response.status}`,
@@ -32,21 +32,18 @@ export async function request(path, options = {}) {
   return data;
 }
 export async function login(email, password) {
-  //  FE-01: POST /auth/login → 응답의 토큰과 사용자 정보를 session에 저장.
-  // ★ FE-01: 로그인 요청 → 토큰과 사용자 정보를 메모리에 저장
+  // 로그인 요청 후 토큰과 사용자 정보를 메모리에 저장
   const data = await request("/auth/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
   session = { accessToken: data.accessToken, user: data.user };
   return data.user;
-  // request()를 이용할 수 있습니다. 성공하면 user를 반환하세요.
- // throw new Error("로그인 연결은 학생 구현 항목입니다. FE-01을 완성하세요.");
 }
 export function canEdit(post) {
-  //  FE-04: 로그인 사용자와 작성자를 비교하세요. 서버 검사도 반드시 필요합니다.
+  // 본인 글에만 수정, 삭제 버튼 표시 (실제 권한 검사는 서버에서 함)
   if (!session.user || !post) return false;
-  return session.user.id === post.authorId; // 시작 코드에서는 CRUD를 체험할 수 있도록 모두 표시합니다.
+  return session.user.id === post.authorId;
 }
 export const api = {
   list: () => request("/posts"),

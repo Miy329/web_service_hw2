@@ -20,7 +20,7 @@ import io.jsonwebtoken.JwtException;
 // 누구인지 확인
 @Service
 public class AuthService {
-  // JJWT 의존성은 pom.xml에 포함되어 있습니다. app.jwt.* 설정은 application.properties 참조.
+  // 설정값은 application.properties(환경변수)에서 읽음
 
   @Value("${app.jwt.secret}")
   private String secret;
@@ -42,7 +42,7 @@ public class AuthService {
 
   @PostConstruct
   void checkSecret() { // 서버가 켜지면 딱 한번 실행되는 것
-    if (secret == null || !secret.matches("[0-9a-fA-F]{64}")) { // 비밀키가 16진수거나 없다면 실행을 안함
+    if (secret == null || !secret.matches("[0-9a-fA-F]{64}")) { // 비밀키가 64자리 16진수가 아니거나 없으면 실행을 안함
       throw new IllegalStateException("JWT_SECRET 형식이 잘못되었습니다.");
     }
   }
@@ -54,7 +54,6 @@ public class AuthService {
   }
 
   // 로그인 성공시 JWT 발급하는 함수
-  //JWT를 알려면 서버 설정에 있는 비밀 키와 발급자의 값을 알아야 함
   public String issueToken(Users.PublicUser user) {
     // 토큰 발급 시각과 만료 시각
     Date now = new Date();
